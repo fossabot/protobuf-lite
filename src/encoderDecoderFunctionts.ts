@@ -1,0 +1,52 @@
+import { Message } from "protobufjs";
+import { getMetadataObject, hasMetadataObject } from "./metadataHelpers";
+
+export const encode = <T>(MessageClass: new () => T, payload: T): Buffer => {
+  if (!payload) {
+    throw new Error(`Payload wasnt provided!`);
+  }
+
+  if (!hasMetadataObject(MessageClass)) {
+    throw new Error(`MessageClass doesn't have protobuf lite metadata assosiated!`);
+  }
+
+  const metadataObject = getMetadataObject(MessageClass);
+  const MessageClassProto = metadataObject.getProto();
+
+  payload = metadataObject.runCustomEncoders(payload);
+
+  const errMsg = MessageClassProto.verify(payload);
+
+  if (errMsg) {
+    throw new Error(errMsg);
+  }
+
+  const encoded: Buffer | Uint8Array = MessageClassProto.encode(payload).finish();
+
+  return Buffer.isBuffer(encoded) ? encoded : Buffer.from(encoded);
+};
+
+export const decode = <T extends Object>(MessageClass: new () => T, encoded: Buffer): T => {
+  if (!hasMetadataObject(MessageClass)) {
+    throw new Error(`MessageClass doesn't have protobuf lite metadata assosiated!`);
+  }
+
+  const metadataObject = getMetadataObject(MessageClass);
+  const MessageClassProto = metadataObject.getProto();
+
+  const decoded: Message<T> = MessageClassProto.decode(encoded);
+
+  const errMsg = MessageClassProto.verify(decoded);
+
+  if (errMsg) {
+    throw new Error(errMsg);
+  }
+
+  metadataObject.runCustomDecoders(decoded);
+
+  metadataObject.fixPrototypes(decoded);
+
+  // return MessageClassProto.toObject(decoded) as T;
+
+  return (decoded as unknown) as T;
+};
