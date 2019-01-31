@@ -242,6 +242,39 @@ describe("protobuf-lite", () => {
     expect(decoded.datesArray[2]).toBeInstanceOf(Date);
   });
 
+  it("should respect required/optional fields", () => {
+    class TestClass {
+      @ProtobufLiteProperty({ optional: true })
+      date: Date;
+    }
+
+    expect(() => encode(TestClass, {})).not.toThrowError();
+
+    class ChildOptional {
+      @ProtobufLiteProperty({ optional: true })
+      name?: string;
+    }
+
+    class ParentOptional {
+      @ProtobufLiteProperty()
+      child: ChildOptional;
+    }
+
+    class ChildNotOptional {
+      @ProtobufLiteProperty()
+      name: string;
+    }
+
+    class ParentNotOptional {
+      @ProtobufLiteProperty()
+      child: ChildNotOptional;
+    }
+
+    const shapeWithOptionalEncoded = encode(ParentOptional, { child: {} });
+
+    expect(() => decode(ParentNotOptional, shapeWithOptionalEncoded)).toThrowError();
+  });
+
   it("message inheritance", () => {
     class Parent {
       @ProtobufLiteProperty()
@@ -279,5 +312,79 @@ describe("protobuf-lite", () => {
     const decoded = decode(Child, encoded);
 
     expect(decoded).toMatchObject(payload);
+  });
+
+  it("inheritance overwrite error", () => {
+    class Parent {
+      @ProtobufLiteProperty()
+      name: string;
+    }
+
+    class Child extends Parent {
+      @ProtobufLiteProperty()
+      name: string;
+    }
+
+    expect(() => encode(Child, { name: "amachild" })).toThrowError();
+  });
+
+  it("error cases", () => {
+    class EmptyClass {}
+
+    expect(() => encode(EmptyClass, {})).toThrowError();
+    expect(() => decode(EmptyClass, Buffer.alloc(0))).toThrowError();
+
+    class Shape1 {
+      @ProtobufLiteProperty({ optional: true })
+      name?: string;
+    }
+
+    class Shape2 {
+      @ProtobufLiteProperty()
+      name: string;
+    }
+
+    const shape1Encoded = encode(Shape1, {});
+
+    expect(() => decode(Shape2, shape1Encoded)).toThrowError();
+
+    expect(() => {
+      class Mistmatch {
+        @ProtobufLiteProperty({ type: () => Number })
+        name: string;
+      }
+    }).toThrowError();
+  });
+
+  it("array error cases", () => {
+    expect(() => {
+      class Message {
+        @ProtobufLiteProperty()
+        arr: Array<any>;
+      }
+    }).toThrowError();
+
+    expect(() => {
+      class Message {
+        @ProtobufLiteProperty({ type: () => Array })
+        arr: Array<any>;
+      }
+    }).toThrowError();
+  });
+
+  it("should throw on symbol fields", () => {
+    expect(() => {
+      class TestClass {
+        @ProtobufLiteProperty()
+        symbol: symbol;
+      }
+    }).toThrowError();
+
+    expect(() => {
+      class TestClass {
+        @ProtobufLiteProperty()
+        symbol: Symbol;
+      }
+    }).toThrowError();
   });
 });

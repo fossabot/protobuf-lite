@@ -1,17 +1,9 @@
-import { Type, Field } from "protobufjs";
+import { Field, Type } from "protobufjs";
 import "reflect-metadata";
 import { ICustomFieldCodec, InternalCodecs } from "./codecs";
 import { getMetadataObject, hasMetadataObject } from "./metadataHelpers";
 import { defaultProtobufLitePropertyOptions } from "./ProtobufLiteProperty";
 import { Constructable, getPrototypeChain } from "./utils";
-
-// const {
-//   // Type,
-//   Field
-// } = require("protobufjs");
-
-// // export type Type = any;
-// export type Field = any;
 
 export interface IProtobufLitePropertyOptions {
   optional?: boolean;
@@ -68,10 +60,12 @@ export class ProtobufLiteMetadata {
     MessageClass,
     decoratorOptions
   }: IRegisterPropertyOptions) {
+    /* istanbul ignore next line */
     if (this.cachedProto) {
       throw new Error(`Cannot register more properties once Proto is generated!`);
     }
 
+    /* istanbul ignore next line */
     if (this.MessageClass !== MessageClass) {
       throw new Error("Tried to register property on wrong ProtobufLiteMetadata instance?");
     }
@@ -219,7 +213,6 @@ export class ProtobufLiteMetadata {
 
   public runCustomEncoders(payload: any) {
     // optimization so copy is not done if not needed
-
     if (this.customCodecs.length === 0) {
       return payload;
     }
@@ -227,8 +220,9 @@ export class ProtobufLiteMetadata {
     payload = { ...payload };
 
     for (let { codec, propertyKey, isArray, isOptional } of this.customCodecs) {
+      /* istanbul ignore next line */
       if (!codec) {
-        throw new Error("wtf");
+        throw new Error(`No codec?`);
       }
 
       if (isArray) {
@@ -257,8 +251,9 @@ export class ProtobufLiteMetadata {
 
   public runCustomDecoders(payload: any): void {
     for (let { codec, propertyKey, isArray, isOptional } of this.customCodecs) {
+      /* istanbul ignore next line */
       if (!codec) {
-        throw new Error("wtf");
+        throw new Error("No codec?");
       }
 
       if (isArray) {
@@ -289,10 +284,6 @@ export class ProtobufLiteMetadata {
   }
 
   private getMessageClassName() {
-    if (!this.MessageClass) {
-      throw new Error(`Cannot get MessageClass.name yet!`);
-    }
-
     return this.MessageClass.name;
   }
 }

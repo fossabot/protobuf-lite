@@ -23,6 +23,7 @@ export const encode = <T>(MessageClass: new () => T, payload: T): Buffer => {
 
   const encoded: Buffer | Uint8Array = MessageClassProto.encode(payload).finish();
 
+  /* istanbul ignore next line */
   return Buffer.isBuffer(encoded) ? encoded : Buffer.from(encoded);
 };
 
@@ -36,17 +37,8 @@ export const decode = <T extends Object>(MessageClass: new () => T, encoded: Buf
 
   const decoded: Message<T> = MessageClassProto.decode(encoded);
 
-  const errMsg = MessageClassProto.verify(decoded);
-
-  if (errMsg) {
-    throw new Error(errMsg);
-  }
-
   metadataObject.runCustomDecoders(decoded);
-
   metadataObject.fixPrototypes(decoded);
-
-  // return MessageClassProto.toObject(decoded) as T;
 
   return (decoded as unknown) as T;
 };
