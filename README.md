@@ -6,6 +6,7 @@
 [![Coveralls](https://img.shields.io/coveralls/alexjoverm/typescript-library-starter.svg)](https://coveralls.io/github/alexjoverm/typescript-library-starter)
 [![Dev Dependencies](https://david-dm.org/alexjoverm/typescript-library-starter/dev-status.svg)](https://david-dm.org/alexjoverm/typescript-library-starter?type=dev)
 [![Donate](https://img.shields.io/badge/donate-paypal-blue.svg)](https://paypal.me/AJoverMorales)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Felderapo%2Fprotobuf-lite.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Felderapo%2Fprotobuf-lite?ref=badge_shield)
 
 A starter project that makes creating a TypeScript library extremely easy.
 
@@ -167,3 +168,7 @@ Made with :heart: by [@alexjoverm](https://twitter.com/alexjoverm) and all these
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/kentcdodds/all-contributors) specification. Contributions of any kind are welcome!
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Felderapo%2Fprotobuf-lite.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Felderapo%2Fprotobuf-lite?ref=badge_large)
