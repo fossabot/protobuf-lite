@@ -11,4 +11,4 @@ test_script:
   - yarn test:prod
   - yarn build
 
-build: on
+build: off
